@@ -58,12 +58,14 @@ if CLIENT then
         local headPos, headAng = ply:GetBonePosition(headBone)
         if not headPos then return end
         
-        -- Draw black square around head
-        cam.Start3D2D(headPos + headAng:Forward() * 4, headAng + Angle(0, -90, 90), 0.1)
-            surface.SetMaterial(blackMaterial)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawTexturedRect(-10, -15, 20, 30)
-        cam.End3D2D()
+        -- Draw black square from multiple angles
+        for i = 0, 359, 90 do
+            cam.Start3D2D(headPos + Vector(0, 0, 0), Angle(0, i, 90), 0.1)
+                surface.SetMaterial(blackMaterial)
+                surface.SetDrawColor(0, 0, 0, 255)
+                surface.DrawTexturedRect(-10, -15, 20, 30)
+            cam.End3D2D()
+        end
     end)
 end
 
