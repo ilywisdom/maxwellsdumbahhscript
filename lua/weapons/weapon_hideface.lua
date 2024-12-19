@@ -36,35 +36,35 @@ end
 
 if CLIENT then
     local blackMaterial = Material("vgui/black")
+    local screenW, screenH = ScrW(), ScrH()
     
-    -- Cache screen resolution
-    local scrW, scrH = ScrW(), ScrH()
-    
-    -- Update cached resolution when screen size changes
-    hook.Add("OnScreenSizeChanged", "UpdateHideFaceScreenRes", function()
-        scrW, scrH = ScrW(), ScrH()
+    -- Update screen resolution when it changes
+    hook.Add("OnScreenSizeChanged", "HideFaceUpdateRes", function()
+        screenW, screenH = ScrW(), ScrH()
     end)
     
     hook.Add("PostDrawTranslucentRenderables", "HideFaceSquare", function()
-        local ply = LocalPlayer()
-        if not IsValid(ply) or not ply:Alive() then return end
-        
-        local activeWeapon = ply:GetActiveWeapon()
-        if not IsValid(activeWeapon) or activeWeapon:GetClass() != "weapon_hideface" then return end
-        
-        local headBone = ply:LookupBone("ValveBiped.Bip01_Head1")
-        if not headBone then return end
-        
-        local headPos, headAng = ply:GetBonePosition(headBone)
-        if not headPos then return end
-        
-        -- Draw black square from multiple angles
-        for i = 0, 359, 90 do
-            cam.Start3D2D(headPos + Vector(0, 0, 0), Angle(0, i, 90), 0.1)
-                surface.SetMaterial(blackMaterial)
-                surface.SetDrawColor(0, 0, 0, 255)
-                surface.DrawTexturedRect(-10, -15, 20, 30)
-            cam.End3D2D()
+        -- Loop through all players instead of just LocalPlayer
+        for _, player in ipairs(player.GetAll()) do
+            if not IsValid(player) or not player:Alive() then continue end
+            
+            local activeWeapon = player:GetActiveWeapon()
+            if not IsValid(activeWeapon) or activeWeapon:GetClass() != "weapon_hideface" then continue end
+            
+            local headBone = player:LookupBone("ValveBiped.Bip01_Head1")
+            if not headBone then continue end
+            
+            local headPos, headAng = player:GetBonePosition(headBone)
+            if not headPos then continue end
+            
+            -- Draw black square from multiple angles
+            for i = 0, 359, 90 do
+                cam.Start3D2D(headPos + Vector(0, 0, 2), Angle(0, i, 90), 0.1)
+                    surface.SetMaterial(blackMaterial)
+                    surface.SetDrawColor(0, 0, 0, 255)
+                    surface.DrawTexturedRect(-10, -15, 20, 30)
+                cam.End3D2D()
+            end
         end
     end)
 end
