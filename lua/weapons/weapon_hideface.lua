@@ -38,7 +38,11 @@ if CLIENT then
     local blackMaterial = Material("vgui/black")
     local screenW, screenH = ScrW(), ScrH()
     local WEAPON_CLASS = "weapon_hideface"
-    local HEAD_BONE = "ValveBiped.Bip01_Head1"
+    local HEAD_BONES = {
+        "ValveBiped.Bip01_Head1",
+        "ValveBiped.Bip01_Neck1",
+        "ValveBiped.Bip01_Spine4", -- Upper torso as fallback
+    }
     local SQUARE_SIZE = {w = 20, h = 30}
     local SQUARE_OFFSET = Vector(0, 0, 2)
     local SPIN_SPEED = 180 -- Degrees per second
@@ -69,11 +73,20 @@ if CLIENT then
             local activeWeapon = player:GetActiveWeapon()
             if not IsValid(activeWeapon) or activeWeapon:GetClass() != WEAPON_CLASS then continue end
             
-            local headBone = player:LookupBone(HEAD_BONE)
-            if not headBone then continue end
+            -- Try each bone in order until we find one
+            local headPos = nil
+            for _, boneName in ipairs(HEAD_BONES) do
+                local bone = player:LookupBone(boneName)
+                if bone then
+                    headPos = player:GetBonePosition(bone)
+                    if headPos then break end
+                end
+            end
             
-            local headPos = player:GetBonePosition(headBone)
-            if not headPos then continue end
+            -- If no valid bone found, use player's eye position as fallback
+            if not headPos then
+                headPos = player:EyePos()
+            end
             
             -- Add bounce animation to offset
             local animatedOffset = Vector(0, 0, SQUARE_OFFSET.z + bounceOffset)
