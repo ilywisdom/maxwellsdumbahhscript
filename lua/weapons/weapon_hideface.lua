@@ -43,10 +43,9 @@ if CLIENT then
         "ValveBiped.Bip01_Neck1",
         "ValveBiped.Bip01_Spine4", -- Upper torso as fallback
     }
-    local SQUARE_SIZE = {w = 30, h = 40}
-    local SQUARE_OFFSET = Vector(0, 0, 4)
-    local BOUNCE_HEIGHT = 1
-    local BOUNCE_SPEED = 2
+    local SQUARE_SIZE = {w = 50, h = 50}
+    local SQUARE_OFFSET = Vector(0, 0, 0)
+    local BOUNCE_HEIGHT = 0
     
     -- Cache math functions
     local math_rad = math.rad
@@ -62,41 +61,23 @@ if CLIENT then
         surface.SetMaterial(blackMaterial)
         surface.SetDrawColor(0, 0, 0, 255)
         
-        local curTime = CurTime()
-        local bounceOffset = math_sin(curTime * BOUNCE_SPEED) * BOUNCE_HEIGHT
-        
         for _, player in ipairs(player.GetAll()) do
             if not IsValid(player) or not player:Alive() then continue end
             
             local activeWeapon = player:GetActiveWeapon()
             if not IsValid(activeWeapon) or activeWeapon:GetClass() != WEAPON_CLASS then continue end
             
-            -- Try each bone in order until we find one
-            local headPos = nil
-            for _, boneName in ipairs(HEAD_BONES) do
-                local bone = player:LookupBone(boneName)
-                if bone then
-                    headPos = player:GetBonePosition(bone)
-                    if headPos then break end
-                end
-            end
+            local headPos = player:EyePos() + Vector(0, 0, 2)
+            local eyeAngles = player:EyeAngles()
             
-            -- If no valid bone found, use player's eye position as fallback
-            if not headPos then
-                headPos = player:EyePos()
-            end
+            -- Draw two intersecting squares to better cover the face
+            cam.Start3D2D(headPos, Angle(0, eyeAngles.y, 90), 0.1)
+                surface.DrawTexturedRect(-SQUARE_SIZE.w/2, -SQUARE_SIZE.h/2, SQUARE_SIZE.w, SQUARE_SIZE.h)
+            cam.End3D2D()
             
-            -- Add bounce animation to offset
-            local animatedOffset = Vector(0, 0, SQUARE_OFFSET.z + bounceOffset)
-            headPos:Add(animatedOffset)
-            
-            -- Draw fixed squares instead of rotating ones
-            for i = 0, 3 do
-                local ang = i * 90
-                cam.Start3D2D(headPos, Angle(0, ang, 90), 0.1)
-                    surface.DrawTexturedRect(-SQUARE_SIZE.w/2, -SQUARE_SIZE.h/2, SQUARE_SIZE.w, SQUARE_SIZE.h)
-                cam.End3D2D()
-            end
+            cam.Start3D2D(headPos, Angle(0, eyeAngles.y + 90, 90), 0.1)
+                surface.DrawTexturedRect(-SQUARE_SIZE.w/2, -SQUARE_SIZE.h/2, SQUARE_SIZE.w, SQUARE_SIZE.h)
+            cam.End3D2D()
         end
     end)
 end
