@@ -36,44 +36,26 @@ end
 
 if CLIENT then
     local blackMaterial = Material("vgui/black")
-    local screenW, screenH = ScrW(), ScrH()
     local WEAPON_CLASS = "weapon_hideface"
-    local HEAD_BONES = {
-        "ValveBiped.Bip01_Head1",
-        "ValveBiped.Bip01_Neck1",
-        "ValveBiped.Bip01_Spine4", -- Upper torso as fallback
-    }
-    local SQUARE_SIZE = {w = 20, h = 20}
-    local SQUARE_OFFSET = Vector(0, 0, 0)
-    local BOUNCE_HEIGHT = 0
+    local SQUARE_SIZE = 50
     
-    -- Cache math functions
-    local math_rad = math.rad
-    local math_cos = math.cos
-    local math_sin = math.sin
-    
-    -- Update screen resolution when it changes
-    hook.Add("OnScreenSizeChanged", "HideFaceUpdateRes", function()
-        screenW, screenH = ScrW(), ScrH()
-    end)
-    
-    hook.Add("PostDrawTranslucentRenderables", "HideFaceSquare", function()
-        surface.SetMaterial(blackMaterial)
-        surface.SetDrawColor(0, 0, 0, 255)
-        
-        for _, player in ipairs(player.GetAll()) do
-            if not IsValid(player) or not player:Alive() then continue end
-            
-            local activeWeapon = player:GetActiveWeapon()
-            if not IsValid(activeWeapon) or activeWeapon:GetClass() != WEAPON_CLASS then continue end
-            
-            local headPos = player:GetBonePosition(player:LookupBone("ValveBiped.Bip01_Head1"))
-            if not headPos then headPos = player:EyePos() end
-            
-            -- Draw square at head position
-            cam.Start3D2D(headPos + Vector(0, 0, 2), Angle(0, player:GetAngles().y - 90, 90), 0.1)
-                surface.DrawTexturedRect(-SQUARE_SIZE.w/2, -SQUARE_SIZE.h/2, SQUARE_SIZE.w, SQUARE_SIZE.h)
-            cam.End3D2D()
+    hook.Add("PrePlayerDraw", "HideFaceSquare", function(ply)
+        -- Check if player has the face hider equipped
+        local weapon = ply:GetActiveWeapon()
+        if IsValid(weapon) and weapon:GetClass() == WEAPON_CLASS then
+            -- Get the head position
+            local headBone = ply:LookupBone("ValveBiped.Bip01_Head1")
+            if headBone then
+                -- Draw a black material over the head
+                render.SetMaterial(blackMaterial)
+                render.DrawQuadEasy(
+                    ply:GetBonePosition(headBone),
+                    ply:GetAngles():Forward(),
+                    SQUARE_SIZE,
+                    SQUARE_SIZE,
+                    Color(0, 0, 0, 255)
+                )
+            end
         end
     end)
 end
