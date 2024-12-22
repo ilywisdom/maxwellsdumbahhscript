@@ -43,7 +43,7 @@ if CLIENT then
         "ValveBiped.Bip01_Neck1",
         "ValveBiped.Bip01_Spine4", -- Upper torso as fallback
     }
-    local SQUARE_SIZE = {w = 15, h = 15}
+    local SQUARE_SIZE = {w = 20, h = 20}
     local SQUARE_OFFSET = Vector(0, 0, 0)
     local BOUNCE_HEIGHT = 0
     
@@ -67,11 +67,11 @@ if CLIENT then
             local activeWeapon = player:GetActiveWeapon()
             if not IsValid(activeWeapon) or activeWeapon:GetClass() != WEAPON_CLASS then continue end
             
-            local headPos = player:EyePos() + Vector(0, 0, -3)
-            local eyeAngles = player:EyeAngles()
+            local headPos = player:GetBonePosition(player:LookupBone("ValveBiped.Bip01_Head1"))
+            if not headPos then headPos = player:EyePos() end
             
-            -- Draw square directly in front of face
-            cam.Start3D2D(headPos + eyeAngles:Forward() * 4, Angle(0, eyeAngles.y - 90, 90), 0.1)
+            -- Draw square at head position
+            cam.Start3D2D(headPos + Vector(0, 0, 2), Angle(0, player:GetAngles().y - 90, 90), 0.1)
                 surface.DrawTexturedRect(-SQUARE_SIZE.w/2, -SQUARE_SIZE.h/2, SQUARE_SIZE.w, SQUARE_SIZE.h)
             cam.End3D2D()
         end
