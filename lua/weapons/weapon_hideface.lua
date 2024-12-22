@@ -27,7 +27,11 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
-    -- Nothing
+    if CLIENT then
+        -- Toggle the face hiding effect
+        local owner = self:GetOwner()
+        hiddenFaces[owner] = not hiddenFaces[owner]
+    end
 end
 
 function SWEP:SecondaryAttack()
@@ -37,20 +41,24 @@ end
 if CLIENT then
     local blackMaterial = Material("vgui/black")
     local WEAPON_CLASS = "weapon_hideface"
-    local SQUARE_SIZE = 50
+    local SQUARE_SIZE = 25
+    
+    -- Track players who have activated the face hider
+    local hiddenFaces = {}
     
     hook.Add("PrePlayerDraw", "HideFaceSquare", function(ply)
-        -- Check if player has the face hider equipped
-        local weapon = ply:GetActiveWeapon()
-        if IsValid(weapon) and weapon:GetClass() == WEAPON_CLASS then
-            -- Get the head position
+        if hiddenFaces[ply] then
             local headBone = ply:LookupBone("ValveBiped.Bip01_Head1")
             if headBone then
-                -- Draw a black material over the head
+                local bonePos, boneAng = ply:GetBonePosition(headBone)
+                -- Offset the position forward from the face
+                local forward = boneAng:Forward()
+                local offsetPos = bonePos + (forward * 4)
+                
                 render.SetMaterial(blackMaterial)
                 render.DrawQuadEasy(
-                    ply:GetBonePosition(headBone),
-                    ply:GetAngles():Forward(),
+                    offsetPos,
+                    forward,
                     SQUARE_SIZE,
                     SQUARE_SIZE,
                     Color(0, 0, 0, 255)
