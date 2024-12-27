@@ -23,9 +23,10 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
 
 if CLIENT then
-    local blackMaterial = Material("vgui/black")
-    local WEAPON_CLASS = "weapon_hideface"
-    local SQUARE_SIZE = 15
+    -- Move these variables outside the scope but keep them local to CLIENT
+    blackMaterial = Material("vgui/black")
+    WEAPON_CLASS = "weapon_hideface"
+    SQUARE_SIZE = 15
 end
 
 -- Move hiddenFaces table outside of CLIENT section and make it global
