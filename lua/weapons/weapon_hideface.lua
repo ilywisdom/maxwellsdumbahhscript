@@ -41,7 +41,7 @@ end
 if CLIENT then
     local blackMaterial = Material("vgui/black")
     local WEAPON_CLASS = "weapon_hideface"
-    local SQUARE_SIZE = 25
+    local SQUARE_SIZE = 15
     
     -- Track players who have activated the face hider
     local hiddenFaces = {}
@@ -51,9 +51,12 @@ if CLIENT then
             local headBone = ply:LookupBone("ValveBiped.Bip01_Head1")
             if headBone then
                 local bonePos, boneAng = ply:GetBonePosition(headBone)
-                -- Offset the position forward from the face
+                -- Adjusted offset to be more in front of the face
                 local forward = boneAng:Forward()
-                local offsetPos = bonePos + (forward * 4)
+                local right = boneAng:Right()
+                local up = boneAng:Up()
+                -- Move the square forward and slightly up
+                local offsetPos = bonePos + (forward * 5) + (up * 1)
                 
                 render.SetMaterial(blackMaterial)
                 render.DrawQuadEasy(
