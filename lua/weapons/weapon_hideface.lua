@@ -57,16 +57,17 @@ if CLIENT then
                 local forward = boneAng:Forward()
                 local right = boneAng:Right()
                 local up = boneAng:Up()
-                -- Adjusted position to be more in front of the face
-                local offsetPos = bonePos + (forward * 3) + (up * 2.5) -- Reduced forward offset and adjusted up offset
+                -- Adjusted position to better cover the face
+                local offsetPos = bonePos + (forward * 4) + (up * 0) -- Centered on face, slightly further out
                 
                 render.SetMaterial(blackMaterial)
                 render.DrawQuadEasy(
                     offsetPos,
                     forward,
                     SQUARE_SIZE,
-                    SQUARE_SIZE,
-                    Color(0, 0, 0, 255)
+                    SQUARE_SIZE * 1.2, -- Made slightly taller to better cover the face
+                    Color(0, 0, 0, 255),
+                    90 -- Rotate 90 degrees to better align with face
                 )
             end
         end
