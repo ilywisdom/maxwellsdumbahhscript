@@ -54,12 +54,11 @@ if CLIENT then
             local headBone = ply:LookupBone("ValveBiped.Bip01_Head1")
             if headBone then
                 local bonePos, boneAng = ply:GetBonePosition(headBone)
-                -- Adjusted offset to be more in front of the face
                 local forward = boneAng:Forward()
                 local right = boneAng:Right()
                 local up = boneAng:Up()
-                -- Move the square forward and slightly up
-                local offsetPos = bonePos + (forward * 5) + (up * 1)
+                -- Adjusted position to be more in front of the face
+                local offsetPos = bonePos + (forward * 3) + (up * 2.5) -- Reduced forward offset and adjusted up offset
                 
                 render.SetMaterial(blackMaterial)
                 render.DrawQuadEasy(
