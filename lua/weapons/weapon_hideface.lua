@@ -22,6 +22,15 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
 
+if CLIENT then
+    local blackMaterial = Material("vgui/black")
+    local WEAPON_CLASS = "weapon_hideface"
+    local SQUARE_SIZE = 15
+end
+
+-- Move hiddenFaces table outside of CLIENT section and make it global
+hiddenFaces = hiddenFaces or {}
+
 function SWEP:Initialize()
     self:SetHoldType("normal")
 end
@@ -39,13 +48,6 @@ function SWEP:SecondaryAttack()
 end
 
 if CLIENT then
-    local blackMaterial = Material("vgui/black")
-    local WEAPON_CLASS = "weapon_hideface"
-    local SQUARE_SIZE = 15
-    
-    -- Track players who have activated the face hider
-    local hiddenFaces = {}
-    
     hook.Add("PrePlayerDraw", "HideFaceSquare", function(ply)
         if hiddenFaces[ply] then
             local headBone = ply:LookupBone("ValveBiped.Bip01_Head1")
